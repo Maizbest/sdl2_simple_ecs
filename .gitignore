@@ -1,4 +1,2 @@
 # ignore 
 build/**/*.exe
-# except for dinamic libraries
-.vscode
