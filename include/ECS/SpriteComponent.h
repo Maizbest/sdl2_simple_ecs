@@ -13,15 +13,18 @@ class SpriteComponent : public Component {
 
  public:
   SpriteComponent() = default;
-  SpriteComponent(const char *path) { setTex(path); };
+  SpriteComponent(const char *path) { setTex(path); }
+  ~SpriteComponent() { SDL_DestroyTexture(texture); }
 
   void init() override {
     transform = &entity->getComponent<TransformComponent>();
 
     src.x = src.y = 0;
-    src.w = src.h = 32;
+    src.w = transform->width;
+    src.h = transform->height;
 
-    dest.w = dest.h = 64;
+    dest.w = transform->scaledWidth();
+    dest.h = transform->scaledHeight();
   };
 
   void update() override {

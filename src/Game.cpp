@@ -2,6 +2,7 @@
 
 #include <vector>
 
+#include "ECS/Collision.h"
 #include "ECS/Components.h"
 #include "game/Map.h"
 #include "game/TextureManager.h"
@@ -10,6 +11,7 @@ Map *map = nullptr;
 Manager enitityManager;
 
 auto &playerEntity(enitityManager.addEntity());
+auto &wall(enitityManager.addEntity());
 
 SDL_Renderer *Game::renderer = nullptr;
 SDL_Event Game::event;
@@ -47,9 +49,14 @@ void Game::init(const char *title, int xpos, int ypos, int width, int height,
 
     // init game entities
     map = new Map();
-    playerEntity.addComponent<TransformComponent>(400 - 32, 300 - 32);
+    playerEntity.addComponent<TransformComponent>(2);
     playerEntity.addComponent<SpriteComponent>("assets/man.png");
     playerEntity.addComponent<KeyboardController>();
+    playerEntity.addComponent<ColliderComponent>("player");
+
+    wall.addComponent<TransformComponent>(300.0f, 300.0f, 300, 20, 1);
+    wall.addComponent<SpriteComponent>("assets/dirt.png");
+    wall.addComponent<ColliderComponent>("wall");
   }
 }
 
@@ -57,9 +64,13 @@ void Game::update() {
   enitityManager.refresh();
   enitityManager.update();
 
-  // auto &playerPosition = playerEntity.getComponent<TransformComponent>().position;
+  auto &playerCollider =
+      playerEntity.getComponent<ColliderComponent>().collider;
+  auto &wallCollider = wall.getComponent<ColliderComponent>().collider;
 
-  // std::cout << playerPosition << std::endl;
+  if (Collision::AABBcollision(playerCollider, wallCollider)) {
+    std::cout << "collision detected" << std::endl;
+  }
 }
 
 void Game::handleEvents() {
@@ -79,7 +90,7 @@ void Game::render() {
 
   SDL_SetRenderDrawColor(renderer, 130, 230, 60, 255);
 
-  map->DrawMap();
+  // map->DrawMap();
   enitityManager.draw();
   /// ------
   SDL_RenderPresent(renderer);

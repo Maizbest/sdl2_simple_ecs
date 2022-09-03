@@ -42,7 +42,9 @@ Map::Map(/* args */) {
   dest.w = dest.h = 32;
 }
 
-Map::~Map() {}
+Map::~Map() {
+  for (auto &kv : terrains) SDL_DestroyTexture(kv.second);
+}
 
 void Map::LoadMap(int arr[20][25]) {
   for (int row = 0; row < 20; row++) {
