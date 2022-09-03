@@ -1,34 +1,32 @@
-#include "game/GameObject.hpp"
-#include "game/TextureManager.hpp"
+#include "game/GameObject.h"
 
-GameObject::GameObject(const char *texFile, SDL_Renderer *ren, int xpos, int ypos) : xpos(xpos), ypos(ypos)
+#include "game/TextureManager.h"
+
+GameObject::GameObject(const char* texFile, int xpos, int ypos)
+    : xpos(xpos),
+      ypos(ypos)
 
 {
-    renderer = ren;
-    texture = TextureManager::LoadTexture(texFile, ren);
+  texture = TextureManager::LoadTexture(texFile);
 
-    src.x = src.y = 0;
-    src.w = src.h = 32;
+  src.x = src.y = 0;
+  src.w = src.h = 32;
 
-    dest.x = xpos;
-    dest.y = ypos;
-    dest.w = dest.h = 64;
+  dest.x = xpos;
+  dest.y = ypos;
+  dest.w = dest.h = 64;
 }
 
-void GameObject::update()
-{
-    xpos++;
-    ypos++;
+void GameObject::update() {
+  xpos++;
+  ypos++;
 
-    dest.x = xpos;
-    dest.y = ypos;
+  dest.x = xpos;
+  dest.y = ypos;
 }
 
-void GameObject::render()
-{
-    SDL_RenderCopy(renderer, texture, &src, &dest);
+void GameObject::render() {
+  SDL_RenderCopy(Game::renderer, texture, &src, &dest);
 }
 
-GameObject::~GameObject()
-{
-}
+GameObject::~GameObject() {}
