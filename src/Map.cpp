@@ -1,66 +1,48 @@
 #include "game/Map.h"
 
-#include "game/TextureManager.h"
+#include <fstream>
+#include <iostream>
 
-std::map<Terrain, SDL_Texture *> Map::terrains =
-    std::map<Terrain, SDL_Texture *>();
+#include "game/Game.h"
 
-int lvl1[20][25] = {
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 1, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 1, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 1, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 1, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 1, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 1, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 1, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-};
+int Map::width = 0;
+int Map::height = 0;
 
-Map::Map(/* args */) {
-  terrains[Terrain::DIRT] = TextureManager::LoadTexture("assets/dirt.png");
-  terrains[Terrain::GRASS] = TextureManager::LoadTexture("assets/grass.png");
-  terrains[Terrain::WATER] = TextureManager::LoadTexture("assets/water.png");
+constexpr int TILE_SRC_SIZE = 32;
+constexpr int TILE_DEST_SIZE = 128;
 
-  LoadMap(lvl1);
+Map::Map() {}
 
-  src.x = src.y = 0;
-  src.w = src.h = 32;
+Map::~Map() {}
 
-  dest.x = dest.y = 0;
-  dest.w = dest.h = 32;
-}
+void Map::LoadMap(std::string path, int sizeX, int sizeY) {
+  char tile;
+  std::fstream mapFile;
+  mapFile.open(path);
 
-Map::~Map() {
-  for (auto &kv : terrains) SDL_DestroyTexture(kv.second);
-}
+  int srcX, srcY;
 
-void Map::LoadMap(int arr[20][25]) {
-  for (int row = 0; row < 20; row++) {
-    for (int col = 0; col < 25; col++) {
-      map[row][col] = arr[row][col];
+  Map::width = sizeX * TILE_DEST_SIZE;
+  Map::height = sizeY * TILE_DEST_SIZE;
+
+  for (int y = 0; y < sizeY; y++) {
+    for (int x = 0; x < sizeX; x++) {
+      mapFile.get(tile);
+      srcY = srcX = atoi(&tile) * TILE_SRC_SIZE;
+
+      mapFile.get(tile);
+      if (tile != ',') {
+        srcX = atoi(&tile) * TILE_SRC_SIZE;
+        mapFile.ignore();
+      } else {
+        srcY = 0;
+      }
+      Game::AddTile(srcX, srcY, x * TILE_DEST_SIZE, y * TILE_DEST_SIZE,
+                    TILE_SRC_SIZE, TILE_SRC_SIZE, TILE_DEST_SIZE,
+                    TILE_DEST_SIZE);  // need to link tile size and position
     }
+    mapFile.ignore();
   }
-}
 
-void Map::DrawMap() {
-  for (int row = 0; row < 20; row++) {
-    dest.y = row * 32;
-    for (int col = 0; col < 25; col++) {
-      dest.x = col * 32;
-      TextureManager::Draw(terrains.at(static_cast<Terrain>(map[row][col])),
-                           src, dest);
-    }
-  }
+  mapFile.close();
 }

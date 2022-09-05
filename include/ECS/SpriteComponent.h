@@ -1,6 +1,10 @@
 #ifndef BFCCA677_1DAE_48E0_A348_3D0C8D774BAE
 #define BFCCA677_1DAE_48E0_A348_3D0C8D774BAE
 
+#include <map>
+#include <string>
+
+#include "Animation.h"
 #include "Components.h"
 #include "SDL2/SDL.h"
 #include "game/TextureManager.h"
@@ -11,9 +15,26 @@ class SpriteComponent : public Component {
   SDL_Texture *texture;
   SDL_Rect src, dest;
 
+  bool animated = false;
+  int frames;
+  int speed;
+
  public:
+  const std::string IDLE = "idle";
+  const std::string WALK = "walk";
+  int animIndex = 0;
+  std::map<std::string, Animation> animations;
+  SDL_RendererFlip flipSprite = SDL_FLIP_NONE;
+
   SpriteComponent() = default;
   SpriteComponent(const char *path) { setTex(path); }
+  SpriteComponent(const char *path, bool isAnimated) {
+    animated = isAnimated;
+    animations.emplace(IDLE, Animation(0, 4, 200));
+    animations.emplace(WALK, Animation(1, 4, 200));
+    Play(IDLE);
+    setTex(path);
+  }
   ~SpriteComponent() { SDL_DestroyTexture(texture); }
 
   void init() override {
@@ -28,15 +49,27 @@ class SpriteComponent : public Component {
   };
 
   void update() override {
-    dest.x = static_cast<int>(transform->position.x);
-    dest.y = static_cast<int>(transform->position.y);
+    if (animated) {
+      src.x = src.w * static_cast<int>((SDL_GetTicks() / speed) % frames);
+    }
+
+    src.y = animIndex * transform->height;
+
+    dest.x = static_cast<int>(transform->position.x) - Game::camera.x;
+    dest.y = static_cast<int>(transform->position.y) - Game::camera.y;
   };
 
   void draw() override {
-    SDL_RenderCopy(Game::renderer, texture, &src, &dest);
+    TextureManager::Draw(texture, src, dest, flipSprite);
   };
 
   void setTex(const char *path) { texture = TextureManager::LoadTexture(path); }
+
+  void Play(std::string animation) {
+    frames = animations[animation].frames;
+    animIndex = animations[animation].index;
+    speed = animations[animation].speed;
+  }
 };
 
 #endif /* BFCCA677_1DAE_48E0_A348_3D0C8D774BAE */

@@ -37,6 +37,7 @@
         "deque": "cpp",
         "functional": "cpp",
         "memory": "cpp",
-        "utility": "cpp"
+        "utility": "cpp",
+        "fstream": "cpp"
     }
 }

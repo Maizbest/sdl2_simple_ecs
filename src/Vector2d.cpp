@@ -44,13 +44,17 @@ Vector2d& Vector2d::Div(const float val) {
   return *this;
 }
 
-// Vector2d& operator+(Vector2d& v1, const Vector2d& v2) { return Vector2d(v1).Add(v2); }
+// Vector2d& operator+(Vector2d& v1, const Vector2d& v2) { return
+// Vector2d(v1).Add(v2); }
 
-// Vector2d& operator-(Vector2d& v1, const Vector2d& v2) { return Vector2d(v1).Sub(v2); }
+// Vector2d& operator-(Vector2d& v1, const Vector2d& v2) { return
+// Vector2d(v1).Sub(v2); }
 
-// Vector2d& operator*(Vector2d& v1, const Vector2d& v2) { return Vector2d(v1).Mul(v2); }
+// Vector2d& operator*(Vector2d& v1, const Vector2d& v2) { return
+// Vector2d(v1).Mul(v2); }
 
-// Vector2d& operator/(Vector2d& v1, const Vector2d& v2) { return Vector2d(v1).Div(v2); }
+// Vector2d& operator/(Vector2d& v1, const Vector2d& v2) { return
+// Vector2d(v1).Div(v2); }
 
 // Vector2d& Vector2d::operator+=(Vector2d& vec) {
 //   return this->Add(vec);
@@ -82,6 +86,19 @@ Vector2d& operator*(Vector2d& v1, const float val) {
 
 Vector2d& operator/(Vector2d& v1, const float val) {
   return Vector2d(v1).Div(val);
+}
+
+Vector2d& Vector2d::operator*(const int& i) {
+  this->x *= i;
+  this->y *= i;
+
+  return *this;
+}
+
+Vector2d& Vector2d::Zero() {
+  this->x = 0;
+  this->y = 0;
+  return *this;
 }
 
 std::ostream& operator<<(std::ostream& stream, const Vector2d& vec) {

@@ -19,8 +19,9 @@ class ColliderComponent : public Component {
     if (!entity->hasComponents<TransformComponent>()) {
       entity->addComponent<TransformComponent>();
     }
-
     transform = &entity->getComponent<TransformComponent>();
+
+    Game::colliders.push_back(this);
   }
 
   void update() override {

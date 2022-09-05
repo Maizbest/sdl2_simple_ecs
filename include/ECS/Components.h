@@ -6,5 +6,6 @@
 #include "SpriteComponent.h"
 #include "KeyboardController.h"
 #include "ColliderComponent.h"
+#include "TileComponent.h"
 
 #endif /* F499248E_A81E_4190_9E68_8638DABE85D7 */

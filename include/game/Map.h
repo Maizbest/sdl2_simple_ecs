@@ -2,24 +2,19 @@
 #define B71054D1_F895_4119_B74E_78E513C4B66D
 
 #include <map>
-
-#include "Game.h"
-
-enum Terrain { DIRT = 2, GRASS = 1, WATER = 0 };
+#include <string>
 
 class Map {
  public:
-  Map(/* args */);
+  Map();
   ~Map();
-  void LoadMap(int[20][25]);
-  void DrawMap();
 
- private:
-  SDL_Rect src, dest;
 
-  static std::map<Terrain, SDL_Texture *> terrains;
 
-  int map[20][25];
+  static int width;
+  static int height;
+  // methods
+  static void LoadMap(std::string path, int sizeX, int sizeY);
 };
 
 #endif /* B71054D1_F895_4119_B74E_78E513C4B66D */
