@@ -3,46 +3,71 @@
 #include <fstream>
 #include <iostream>
 
+#include "ECS/Components.h"
+#include "ECS/ESC.h"
 #include "game/Game.h"
 
-int Map::width = 0;
-int Map::height = 0;
+extern Manager enitityManager;
 
-constexpr int TILE_SRC_SIZE = 32;
-constexpr int TILE_DEST_SIZE = 128;
-
-Map::Map() {}
+Map::Map(std::string mapFile, int tSize, int tScale)
+    : mapFilePath(mapFile), tileScale(tScale), tileSize(tSize) {}
 
 Map::~Map() {}
 
 void Map::LoadMap(std::string path, int sizeX, int sizeY) {
-  char tile;
+  char c;
   std::fstream mapFile;
   mapFile.open(path);
 
   int srcX, srcY;
 
-  Map::width = sizeX * TILE_DEST_SIZE;
-  Map::height = sizeY * TILE_DEST_SIZE;
+  width = sizeX * tileSize * tileScale;
+  height = sizeY * tileSize * tileScale;
 
   for (int y = 0; y < sizeY; y++) {
     for (int x = 0; x < sizeX; x++) {
-      mapFile.get(tile);
-      srcY = srcX = atoi(&tile) * TILE_SRC_SIZE;
+      mapFile.get(c);
+      srcY = srcX = atoi(&c) * tileSize;
 
-      mapFile.get(tile);
-      if (tile != ',') {
-        srcX = atoi(&tile) * TILE_SRC_SIZE;
+      mapFile.get(c);
+      if (c != ',') {
+        srcX = atoi(&c) * tileSize;
         mapFile.ignore();
       } else {
         srcY = 0;
       }
-      Game::AddTile(srcX, srcY, x * TILE_DEST_SIZE, y * TILE_DEST_SIZE,
-                    TILE_SRC_SIZE, TILE_SRC_SIZE, TILE_DEST_SIZE,
-                    TILE_DEST_SIZE);  // need to link tile size and position
+      AddTile(srcX, srcY, x * tileSize * tileScale, y * tileSize * tileScale,
+              tileSize, tileScale);  // need to link tile size and position
     }
     mapFile.ignore();
   }
 
+  mapFile.ignore();
+
+  for (int y = 0; y < sizeY; y++) {
+    for (int x = 0; x < sizeX; x++) {
+      mapFile.get(c);
+      // std::cout << c << ' ' << std::endl;
+      if (c == '1') {
+        auto& collider(enitityManager.addEntity());
+        collider.addComponent<ColliderComponent>(
+            "terrain", x * tileSize * tileScale, y * tileSize * tileScale,
+            tileSize * tileScale);
+        collider.addGroup(GroupLabel::CollisionGroup);
+      }
+      mapFile.ignore();
+    }
+    // std::cout << std::endl;
+    mapFile.ignore();
+  }
+
   mapFile.close();
+}
+
+void Map::AddTile(int srcX, int srcY, int xpos, int ypos, int tSize,
+                  int tScale) {
+  auto& tile(enitityManager.addEntity());
+  tile.addComponent<TileComponent>(srcX, srcY, xpos, ypos, tSize, tScale,
+                                   mapFilePath);
+  tile.addGroup(GroupLabel::MapGroup);
 }

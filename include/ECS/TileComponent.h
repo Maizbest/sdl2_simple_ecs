@@ -17,22 +17,15 @@ class TileComponent : public Component {
 
   ~TileComponent() { SDL_DestroyTexture(texture); };
 
-  TileComponent(int srcX, int srcY, int xpos, int ypos, int sourceW,
-                int sourceH, int destW, int destH, std::string path) {
+  TileComponent(int srcX, int srcY, int xpos, int ypos, int tSize, int tScale,
+                std::string path) {
     texture = TextureManager::LoadTexture(path.c_str());
 
     position.x = xpos;
     position.y = ypos;
 
-    src.x = srcX;
-    src.y = srcY;
-    src.w = sourceW;
-    src.h = sourceH;
-
-    dest.x = xpos;
-    dest.y = ypos;
-    dest.w = destW;
-    dest.h = destH;
+    src = {srcX, srcY, tSize, tSize};
+    dest = {xpos, ypos, tSize * tScale, tSize * tScale};
   }
 
   void init() override{};

@@ -11,6 +11,8 @@
 
 class ColliderComponent;
 
+enum GroupLabel : std::size_t { MapGroup, PlayerGroup, EnemyGroup, CollisionGroup };
+
 class Game {
  public:
   Game();
@@ -25,14 +27,10 @@ class Game {
 
   bool running() { return isRunning; };
 
-  static void AddTile(int srcX, int srcY, int xpos, int ypos, int srcW,
-                      int srcH, int destW, int destH);
-
   static int width;
   static int height;
   static SDL_Renderer *renderer;
   static SDL_Event event;
-  static std::vector<ColliderComponent *> colliders;
   static bool isRunning;
   static SDL_Rect camera;
 
