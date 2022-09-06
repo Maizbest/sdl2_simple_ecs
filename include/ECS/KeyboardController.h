@@ -33,6 +33,11 @@ class KeyboardController : public Component {
           transform->velocity.x = 1.0;
           sprite->Play(sprite->WALK);
           break;
+        case SDLK_SPACE:
+          Game::assets->CreateProjectile(
+              Vector2d(transform->position.x + transform->width * 2,
+                       transform->position.y),
+              Vector2d(1.0, 0.0), 100, 1, "projectile");
         default:
           break;
       }

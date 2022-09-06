@@ -7,6 +7,7 @@
 #include "Animation.h"
 #include "Components.h"
 #include "SDL2/SDL.h"
+#include "ECS/AssetManager.h"
 #include "game/TextureManager.h"
 
 class SpriteComponent : public Component {
@@ -27,15 +28,18 @@ class SpriteComponent : public Component {
   SDL_RendererFlip flipSprite = SDL_FLIP_NONE;
 
   SpriteComponent() = default;
+
   SpriteComponent(const char *path) { setTex(path); }
-  SpriteComponent(const char *path, bool isAnimated) {
+
+  SpriteComponent(std::string texID, bool isAnimated = false) {
     animated = isAnimated;
     animations.emplace(IDLE, Animation(0, 4, 200));
     animations.emplace(WALK, Animation(1, 4, 200));
     Play(IDLE);
-    setTex(path);
+    setTex(texID);
   }
-  ~SpriteComponent() { SDL_DestroyTexture(texture); }
+
+  ~SpriteComponent() {}
 
   void init() override {
     transform = &entity->getComponent<TransformComponent>();
@@ -63,7 +67,7 @@ class SpriteComponent : public Component {
     TextureManager::Draw(texture, src, dest, flipSprite);
   };
 
-  void setTex(const char *path) { texture = TextureManager::LoadTexture(path); }
+  void setTex(std::string texID) { texture = Game::assets->GetTexture(texID); }
 
   void Play(std::string animation) {
     frames = animations[animation].frames;

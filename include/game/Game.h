@@ -7,11 +7,19 @@
 #include <iostream>
 #include <vector>
 
+#include "ECS/AssetManager.h"
 #include "game/Map.h"
 
 class ColliderComponent;
+class AssetManager;
 
-enum GroupLabel : std::size_t { MapGroup, PlayerGroup, EnemyGroup, CollisionGroup };
+enum GroupLabel : std::size_t {
+  MapGroup,
+  PlayerGroup,
+  EnemyGroup,
+  CollisionGroup,
+  ProjectieGroup
+};
 
 class Game {
  public:
@@ -33,6 +41,7 @@ class Game {
   static SDL_Event event;
   static bool isRunning;
   static SDL_Rect camera;
+  static AssetManager *assets;
 
  private:
   SDL_Window *window;

@@ -9,8 +9,8 @@
 
 extern Manager enitityManager;
 
-Map::Map(std::string mapFile, int tSize, int tScale)
-    : mapFilePath(mapFile), tileScale(tScale), tileSize(tSize) {}
+Map::Map(std::string tID, int tSize, int tScale)
+    : textureID(tID), tileScale(tScale), tileSize(tSize) {}
 
 Map::~Map() {}
 
@@ -68,6 +68,6 @@ void Map::AddTile(int srcX, int srcY, int xpos, int ypos, int tSize,
                   int tScale) {
   auto& tile(enitityManager.addEntity());
   tile.addComponent<TileComponent>(srcX, srcY, xpos, ypos, tSize, tScale,
-                                   mapFilePath);
+                                   textureID);
   tile.addGroup(GroupLabel::MapGroup);
 }
