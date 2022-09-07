@@ -3,7 +3,6 @@
 
 #include <string>
 
-#include "ECS/Components.h"
 #include "SDL2/SDL.h"
 #include "game/Map.h"
 
@@ -32,10 +31,7 @@ class TileComponent : public Component {
 
   void draw() override { TextureManager::Draw(texture, src, dest); };
 
-  void update() override {
-    dest.x = position.x - Game::camera.x;
-    dest.y = position.y - Game::camera.y;
-  };
+  void update() override{};
 };
 
 #endif /* E39F01FC_CA2F_4640_BE7A_64E9CCF59BBA */

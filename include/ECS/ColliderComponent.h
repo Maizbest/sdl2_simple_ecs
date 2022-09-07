@@ -5,7 +5,7 @@
 
 #include "ECS/Components.h"
 #include "SDL2/SDL.h"
-#include "game/TextureManager.h"
+#include "ECS/TextureManager.h"
 
 class ColliderComponent : public Component {
  public:
@@ -35,15 +35,6 @@ class ColliderComponent : public Component {
   }
 
   void update() override {
-    if (tag != "terrain") {
-      collider.x = static_cast<int>(transform->position.x);
-      collider.y = static_cast<int>(transform->position.y);
-      collider.w = transform->scaledWidth();
-      collider.h = transform->scaledHeight();
-    }
-
-    dest.x = collider.x - Game::camera.x;
-    dest.y = collider.y - Game::camera.y;
   }
 
   void draw() override { TextureManager::Draw(texture, src, dest); }

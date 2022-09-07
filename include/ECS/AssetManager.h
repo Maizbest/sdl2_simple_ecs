@@ -5,7 +5,7 @@
 #include <string>
 
 #include "ECS/ESC.h"
-#include "game/TextureManager.h"
+#include "ECS/TextureManager.h"
 #include "game/Vector2d.h"
 
 class AssetManager {

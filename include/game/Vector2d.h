@@ -12,6 +12,8 @@ class Vector2d {
   Vector2d(float x, float y);
   ~Vector2d();
 
+  static Vector2d Zero() { return Vector2d(0.0, 0.0); }
+
   Vector2d& Add(const Vector2d& vec);
   Vector2d& Sub(const Vector2d& vec);
   Vector2d& Mul(const Vector2d& vec);
@@ -20,15 +22,16 @@ class Vector2d {
   Vector2d& Mul(const float val);
   Vector2d& Div(const float val);
 
-  // friend Vector2d& operator+(Vector2d& v1, const Vector2d& v2);
-  // friend Vector2d& operator-(Vector2d& v1, const Vector2d& v2);
+  friend Vector2d operator+(const Vector2d& vecA, const Vector2d& vecB);
+  friend Vector2d operator-(const Vector2d& vecA, const Vector2d& vecB);
+
   // friend Vector2d& operator*(Vector2d& v1, const Vector2d& v2);
   // friend Vector2d& operator/(Vector2d& v1, const Vector2d& v2);
 
   friend Vector2d& operator*(Vector2d& v1, const float val);
   friend Vector2d& operator/(Vector2d& v1, const float val);
 
-  // Vector2d& operator+=(Vector2d& vec);
+  Vector2d& operator+=(Vector2d& vec);
   // Vector2d& operator-=(Vector2d& vec);
   // Vector2d& operator*=(Vector2d& vec);
   // Vector2d& operator/=(Vector2d& vec);
@@ -37,8 +40,6 @@ class Vector2d {
   Vector2d& operator/=(const float vec);
 
   Vector2d& operator*(const int& i);
-  Vector2d& Zero();
-
 
   friend std::ostream& operator<<(std::ostream& stream, const Vector2d& vec);
 };

@@ -1,37 +1,27 @@
 #include "game/Game.h"
 
+#include <chrono>
 #include <string>
 #include <vector>
 
 #include "ECS/Collision.h"
 #include "ECS/Components.h"
-#include "game/TextureManager.h"
+#include "ECS/TextureManager.h"
 
 int Game::width = 800;
 int Game::height = 600;
 
 Manager enitityManager;
-
-Map *map;
+AssetManager *Game::assets = new AssetManager(&enitityManager);
 
 SDL_Renderer *Game::renderer = nullptr;
 SDL_Event Game::event;
+
 bool Game::isRunning = false;
-SDL_Rect Game::camera = {0, 0, Game::width, Game::height};
-AssetManager *Game::assets = new AssetManager(&enitityManager);
 
-auto &playerEntity(enitityManager.addEntity());
-auto &tiles(enitityManager.getGroup(GroupLabel::MapGroup));
-auto &players(enitityManager.getGroup(GroupLabel::PlayerGroup));
-auto &colliders(enitityManager.getGroup(GroupLabel::CollisionGroup));
-auto &projectiles(enitityManager.getGroup(GroupLabel::ProjectieGroup));
+FieldComponent *field = nullptr;
 
-const std::string terrainTilesFile("assets/terrains.png");
-
-//
-//
-//
-//
+std::chrono::time_point frame_end = std::chrono::high_resolution_clock::now();
 
 Game::Game(/* args */) { std::cout << "Game instantiated." << std::endl; }
 
@@ -59,67 +49,16 @@ void Game::init(const char *title, int xpos, int ypos, int width, int height,
     }
     isRunning = true;
 
-    Game::width = width;
-    Game::height = height;
-    camera.w = Game::width;
-    camera.h = Game::height;
-
-    // init game entities
-
-    assets->AddTexture("terrain", "assets/terrains.png");
-    assets->AddTexture("player", "assets/player_animations.png");
-    assets->AddTexture("projectile", "assets/projectile.png");
-
-    map = new Map("terrain", 32, 2);
-    map->LoadMap("assets/lvl2_25x25.map", 25, 25);
-
-    playerEntity.addComponent<TransformComponent>(200, 200, 2);
-    playerEntity.addComponent<SpriteComponent>("player", true);
-    playerEntity.addComponent<KeyboardController>();
-    playerEntity.addComponent<ColliderComponent>("player");
-    playerEntity.addGroup(GroupLabel::PlayerGroup);
-    playerEntity.addGroup(GroupLabel::CollisionGroup);
-
-    assets->CreateProjectile(Vector2d(400.0, 300.0), Vector2d(1.0, 0.0), 400, 1,
-                             "projectile");
+    assets->AddTexture("cells", "assets/cells.png");
+    auto& field = enitityManager.addEntity();
+    field.addComponent<KeyboardController>();
+    field.addComponent<FieldComponent>(100, 100, 10, 10, "cells");
   }
 }
 
 void Game::update() {
-  auto prevPlayerPosition =
-      playerEntity.getComponent<TransformComponent>().position;
-
   enitityManager.refresh();
   enitityManager.update();
-
-  auto &playerTransform = playerEntity.getComponent<TransformComponent>();
-  auto &playerCollider = playerEntity.getComponent<ColliderComponent>();
-
-  SDL_Rect tmpRect;
-  for (auto &entity : colliders) {
-    auto collider = entity->getComponent<ColliderComponent>();
-    if (collider.tag != playerCollider.tag &&
-        Collision::AABB(playerCollider, collider)) {
-      playerTransform.position = prevPlayerPosition;
-    }
-  }
-
-  for (auto &projectile : projectiles) {
-    auto collider = projectile->getComponent<ColliderComponent>();
-    if (collider.tag != playerCollider.tag &&
-        Collision::AABB(playerCollider, collider)) {
-      projectile->destroy();
-    }
-  }
-
-  Vector2d pPos = playerTransform.position;
-  camera.x = pPos.x - camera.w / 2 + playerTransform.scaledWidth() / 2;
-  camera.y = pPos.y - camera.h / 2 + playerTransform.scaledHeight() / 2;
-
-  if (camera.x < 0) camera.x = 0;
-  if (camera.y < 0) camera.y = 0;
-  if (camera.x > (map->width - camera.w)) camera.x = map->width - camera.w;
-  if (camera.y > (map->height - camera.h)) camera.y = map->height - camera.h;
 }
 
 void Game::handleEvents() { SDL_PollEvent(&event); }
@@ -128,14 +67,10 @@ void Game::render() {
   SDL_RenderClear(renderer);
   ///----- main render
 
-  SDL_SetRenderDrawColor(renderer, 130, 230, 60, 255);
-
-  for (auto &tile : tiles) tile->draw();
-  for (auto &player : players) player->draw();
-  for (auto &collider : colliders) collider->draw();
-  for (auto &projectile : projectiles) projectile->draw();
+  enitityManager.draw();
 
   /// ------
+  SDL_SetRenderDrawColor(renderer, 0, 255, 0, 0);
   SDL_RenderPresent(renderer);
 }
 

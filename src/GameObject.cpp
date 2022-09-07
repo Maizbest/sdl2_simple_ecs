@@ -1,6 +1,6 @@
 #include "game/GameObject.h"
 
-#include "game/TextureManager.h"
+#include "ECS/TextureManager.h"
 
 GameObject::GameObject(const char* texFile, int xpos, int ypos)
     : xpos(xpos),

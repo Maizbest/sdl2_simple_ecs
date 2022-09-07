@@ -6,9 +6,9 @@
 
 #include "Animation.h"
 #include "Components.h"
-#include "SDL2/SDL.h"
 #include "ECS/AssetManager.h"
-#include "game/TextureManager.h"
+#include "ECS/TextureManager.h"
+#include "SDL2/SDL.h"
 
 class SpriteComponent : public Component {
  private:
@@ -58,9 +58,6 @@ class SpriteComponent : public Component {
     }
 
     src.y = animIndex * transform->height;
-
-    dest.x = static_cast<int>(transform->position.x) - Game::camera.x;
-    dest.y = static_cast<int>(transform->position.y) - Game::camera.y;
   };
 
   void draw() override {

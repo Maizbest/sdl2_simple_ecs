@@ -1,7 +1,6 @@
 #ifndef AF083087_D7AB_424C_879D_04E094856244
 #define AF083087_D7AB_424C_879D_04E094856244
 
-#include "Components.h"
 #include "game/Vector2d.h"
 
 class TransformComponent : public Component {

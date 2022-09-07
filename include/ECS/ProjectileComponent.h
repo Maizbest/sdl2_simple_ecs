@@ -19,16 +19,6 @@ class ProjectileComponent : public Component {
     transform->velocity = m_velocity;
   }
   void update() override {
-    m_distance += m_speed;
-
-    if (m_distance > m_range ||
-        transform->position.x > Game::camera.x + Game::camera.w ||
-        transform->position.x < Game::camera.x ||
-        transform->position.y > Game::camera.y + Game::camera.h ||
-        transform->position.y < Game::camera.y) {
-      std::cout << "Projectile out of bounds" << std::endl;
-      entity->destroy();
-    }
   }
   void draw() override {}
 

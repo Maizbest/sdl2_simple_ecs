@@ -3,7 +3,7 @@
 
 #include <map>
 
-#include "Game.h"
+#include "game/Game.h"
 
 class TextureManager {
  public:
