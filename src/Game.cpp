@@ -52,7 +52,7 @@ void Game::init(const char *title, int xpos, int ypos, int width, int height,
     assets->AddTexture("cells", "assets/cells.png");
     auto& field = enitityManager.addEntity();
     field.addComponent<KeyboardController>();
-    field.addComponent<FieldComponent>(100, 100, 10, 10, "cells");
+    field.addComponent<FieldComponent>(100, 100, 5, 5, "cells");
   }
 }
 

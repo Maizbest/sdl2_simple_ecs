@@ -30,11 +30,11 @@ class KeyboardController : public Component {
       SDL_GetMouseState(&xpos, &ypos);
       std::cout << "click: " << xpos << ' ' << ypos << std::endl;
       if (Game::event.button.button == SDL_BUTTON_LEFT) {
-        entity->getComponent<FieldComponent>().leftClick(xpos, ypos);
+        entity->getComponent<FieldComponent>().handleMouseLeftDown(xpos, ypos);
       }
 
       if (Game::event.button.button == SDL_BUTTON_RIGHT) {
-        entity->getComponent<FieldComponent>().rightClick(xpos, ypos);
+        entity->getComponent<FieldComponent>().handleRightClick(xpos, ypos);
       }
     }
     if (Game::event.type == SDL_MOUSEBUTTONUP) {
